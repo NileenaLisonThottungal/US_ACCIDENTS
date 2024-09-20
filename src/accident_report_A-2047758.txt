@@ -1,0 +1,54 @@
+
+ACCIDENT REPORT
+
+Incident ID: A-2047758  
+Source: Source2  
+Severity: 2  
+Incident Duration: From 2019-06-12 10:10:56 to 2019-06-12 10:55:58  
+Location:  
+- Start Coordinates: Latitude 30.641211, Longitude -91.153481  
+- End Coordinates: Latitude nan, Longitude nan  
+- Distance Covered: 0.0 miles  
+
+DESCRIPTION:  
+The accident occurred on Highway 19, in the city of Zachary, county of East Baton Rouge, state of LA, ZIP code 70791-4610, country US.  
+
+WEATHER AND CONDITIONS AT THAT TIME:  
+- Temperature: 77.0°F  
+- Wind Chill: 77.0°F  
+- Humidity: 62.0%  
+- Pressure: 29.92 in  
+- Visibility: 10.0 miles  
+- Wind Speed: 5.0 mph from the NW  
+- Precipitation: 0.0 inches  
+- Weather Condition: Fair  
+- Timezone: US/Central  
+
+NEARBY LANDMARK AND FEATURES:  
+- Nearby airport: KBTR  
+- Amenity: False  
+- Bump: False  
+- Crossing: False  
+- Give Way: False  
+- Junction: False  
+- No Exit: False  
+- Railway: False  
+- Roundabout: False  
+- Station: False  
+- Stop: False  
+- Traffic Calming Measures: False  
+- Traffic Signals: True  
+- Turning Loop: False  
+
+LIGHTING CONDITIONS:  
+- Sunrise/Sunset: Day  
+- Civil Twilight: Day  
+- Nautical Twilight: Day  
+- Astronomical Twilight: Day  
+
+---
+
+SUMMARY:  
+An accident with a severity rating of 2 occurred on Highway 19 in Zachary, LA, covering a distance of 0.0 miles. Weather conditions at the time included Fair, with visibility of 10.0 miles and wind speeds of 5.0 mph. The accident took place between 2019-06-12 10:10:56 and 2019-06-12 10:55:58 and was reported in the US/Central timezone.
+
+The exact causes and circumstances surrounding the accident will require further investigation.
