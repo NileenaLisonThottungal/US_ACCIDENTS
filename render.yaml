@@ -1,14 +1,11 @@
 services:
   # See https://render.com/docs/blueprint-spec for more info on render blueprints
   - type: web
-    name: US_ACCIDENTS
+    name: US_ACCIDENT
     env: python
     plan: free
     # A requirements.txt file must exist
-   build commands:
-    - /opt/render/project/src/.venv/bin/python3.10 -m pip install --upgrade pip
-    - pip install -r requirements.txt
-
+    buildCommand: pip install -r requirements.txt
     # A src/app.py file must exist and contain `server=app.server`
     startCommand: gunicorn --chdir src app:server
     envVars:
