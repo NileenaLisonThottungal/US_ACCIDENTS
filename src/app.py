@@ -12,10 +12,8 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import aiohttp
 import asyncio
-# Load dataset
 file_path = r"US_Accidents_March23_sampled_500k.csv"
 df = pd.read_csv(file_path)
-# Preprocess data for the bubble chart
 df_filteredd = df[['State', 'Severity']].dropna()
 top_states = df_filteredd['State'].value_counts().nlargest(10).index
 df_filteredd = df_filteredd[df_filteredd['State'].isin(top_states)]
