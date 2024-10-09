@@ -17,54 +17,36 @@ df = pd.read_csv(file_path)
 df_filteredd = df[['State', 'Severity']].dropna()
 top_states = df_filteredd['State'].value_counts().nlargest(10).index
 df_filteredd = df_filteredd[df_filteredd['State'].isin(top_states)]
-# Preprocess data for correlation matrix
 df_filtered = df[['Temperature(F)', 'Wind_Speed(mph)', 'Humidity(%)', 'Severity']].dropna()
 correlation_matrix = df_filtered.corr()
-# Data for Sunburst Chart
 df_sunburst = df[['State', 'City', 'Severity', 'ID']].dropna()
 df_grouped_sunburst = df_sunburst.groupby(['State', 'City', 'Severity']).size().reset_index(name='Accident_Count')
-# Data for Severity vs. Distance Scatter Plot
 df_filtered_scatter = df[['Distance(mi)', 'Severity', 'Weather_Condition']].dropna()
-# Check for missing values in 'Severity' and 'Street'
 df['Severity'] = df['Severity'].fillna(0).astype(int)
 df['Street'] = df['Street'].fillna('Unknown')
 df_filtered = df[['Severity', 'Start_Time']].dropna()
 df_grouped = df_filtered.groupby(['Severity']).size().reset_index(name='Counts')
 df_treemap = df[['Weather_Condition', 'Severity']].dropna()
 df_grouped_treemap = df_treemap.groupby(['Weather_Condition', 'Severity']).size().reset_index(name='Count')
-# Data for Choropleth Map
 df_state_counts = df['State'].value_counts().reset_index()
 df_state_counts.columns = ['State', 'Accident_Count']
-# Preprocess data for the polar bar chart
 df['Severity'] = df['Severity'].astype(int)
 df_filtered = df[['City', 'Severity']].dropna()
-# 1. Parallel Coordinates Plot
 df_parallel = df[['Severity', 'Temperature(F)', 'Wind_Speed(mph)', 'Humidity(%)', 'Visibility(mi)']].dropna()
-
-# 2. Violin Plot
 df_violin = df[['Severity', 'Temperature(F)', 'Humidity(%)']].dropna()
-
-
-# 13. Word Cloud
 text = ' '.join(df['Description'].dropna())
 wc = WordCloud(width=800, height=400, background_color='white').generate(text)
-
-# Save Word Cloud to a BytesIO object
 img = io.BytesIO()
 wc.to_image().save(img, format='png')
 img.seek(0)
 img_base64 = base64.b64encode(img.getvalue()).decode()
-# Aggregate data by city and severity
 city_severity_counts = df.groupby(['City', 'Severity']).size().reset_index(name='Count')
-# Accident Hotspot Data
 df_hotspots = df[['Start_Lat', 'Start_Lng', 'Severity']].dropna()
-# Function to get top 10 cities by accident count for a given severity level
 def get_top_cities_by_severity(df, severity_level):
     df_severity = df[df['Severity'] == severity_level]
     top_cities = df_severity['City'].value_counts().head(10).reset_index()
     top_cities.columns = ['City', 'Count']
     return top_cities
-# Find the top cities for each severity level
 def get_top_cities(df):
     top_cities = pd.DataFrame()
     for severity in df['Severity'].unique():
@@ -74,29 +56,23 @@ def get_top_cities(df):
 
 top_cities = get_top_cities(city_severity_counts)
 
-# Sample DataFrame for Accident Scene Sketch
 sample_df = df[['ID', 'Start_Lat', 'Start_Lng', 'End_Lat', 'End_Lng', 'Description', 'Severity']].dropna()
-# Define color mapping for different severity levels
 color_map = {
     1: 'blue',    # Color for Severity 1
     2: 'orange',  # Color for Severity 2
     3: 'red',     # Color for Severity 3
     4: 'purple'   # Color for Severity 4
 }
-
-# Initialize the app with external stylesheets and suppress_callback_exceptions=True
 app = dash.Dash(__name__, external_stylesheets=[
     dbc.themes.DARKLY,
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'
 ], suppress_callback_exceptions=True)
 server = app.server
-# Define the summarized report
 summarized_text = """
 The US Accidents dataset (2016 - 2023) encompasses traffic accident records from 49 states across the United States, totaling approximately 1.5 million records. For the subset of 500,000 records analyzed, significant missing values are noted in key columns like End_Lat, End_Lng, and Weather_Timestamp. There are no duplicated rows. Numerical features reveal a mean accident severity of 2.21 on a scale from 1 (least impact) to 4 (most impact). The average latitude and longitude of incidents are 36.21 and -94.74 respectively, with an average distance affected being 0.56 miles. The dataset shows an average temperature of 61.65°F and an average humidity of 64.83%, with 'Fair' being the most common weather condition.
 Categorically, Miami tops the list with 12,141 accidents, followed by states like California (113,274 accidents), Florida (56,710), and Texas (37,355). The severity distribution shows that most accidents are classified under Severity level 2 (398,142), with fewer incidents at Severity levels 3 (84,520) and 4 (13,064). Notably, accidents occur more frequently during the day (344,967) compared to the night (153,550). The dataset also indicates that 74,035 accidents occurred where a traffic signal was present, while 425,965 did not have a traffic signal. Overall, the data suggests that accidents are more common in clear or fair weather conditions and highlights specific states and cities with high accident frequencies, underscoring areas that may require targeted traffic safety interventions.
 """
 
-# Define API endpoint for Phi-2
 api_endpoint = "http://localhost:11434/api/generate"
 
 async def ask_phi_with_summary(question):
@@ -118,7 +94,6 @@ async def ask_phi_with_summary(question):
             else:
                 return f"Error: {response.status} - {await response.text()}"
 
-# Wrapper function to run async code in sync callback
 def run_async_chat(question):
     return asyncio.run(ask_phi_with_summary(question))
 
@@ -679,7 +654,7 @@ The exact causes and circumstances surrounding the accident will require further
 
     return [None, None]
 
-# Funnel chart callback
+
 @app.callback(
     Output('funnel-chart', 'figure'),
     Input('severity-dropdown', 'value')
@@ -698,7 +673,7 @@ def update_funnel_chart(selected_severities):
     )
     
     return fig
-# Callback for Parallel Coordinates Plot
+
 @app.callback(
     Output("parallel-coordinates", "figure"),
     Input("parallel-coordinates", "id")
@@ -708,7 +683,7 @@ def update_parallel_coordinates(_):
                                   dimensions=['Temperature(F)', 'Wind_Speed(mph)', 'Humidity(%)', 'Visibility(mi)'])
     return fig
 
-# Callback for Violin Plot
+
 @app.callback(
     Output("violin-plot", "figure"),
     Input("violin-plot", "id")
@@ -718,7 +693,6 @@ def update_violin_plot(_):
     return fig
 
 
-# Callback for Hotspots Map
 @app.callback(
     Output("hotspots-map", "figure"),
     Input("hotspots-map", "id")
@@ -730,7 +704,7 @@ def update_hotspots_map(_):
                             mapbox_style="open-street-map",
                             title='Accident Hotspots and Severity')
     return fig
-# Callback for the Sunburst Chart
+
 @app.callback(
     Output('sunburst-chart', 'figure'),
     [Input('severity-dropdown', 'value')]
@@ -751,7 +725,7 @@ def update_sunburst_chart(selected_severity):
     
     fig.update_layout(margin=dict(t=30, l=0, r=0, b=0))
     return fig
-# Callback for Scatter Plot (Severity vs. Distance)
+
 @app.callback(
     Output('severity-distance-scatter', 'figure'),
     Input('severity-distance-scatter', 'id')
@@ -762,7 +736,7 @@ def update_severity_distance_scatter(_):
                      title='Severity vs. Distance of Accidents',
                      labels={'Distance(mi)': 'Distance (miles)', 'Severity': 'Severity'})
     return fig
-# Callback for Treemap
+
 @app.callback(
     Output('treemap', 'figure'),
     Input('treemap', 'id')
@@ -772,7 +746,7 @@ def update_treemap(_):
     fig = px.treemap(df_grouped_treemap, path=['Weather_Condition', 'Severity'], values='Count',
                      title='Accident Severity Distribution by Weather Condition')
     return fig
-# Callback for Choropleth Map
+
 @app.callback(
     Output("map", "figure"),
     Input("map", "id"),
@@ -791,7 +765,7 @@ def display_choropleth(_):
     fig.update_geos(fitbounds="locations", visible=True)
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return fig
-# Callback for Polar Bar Chart
+
 @app.callback(
     Output("graph", "figure"),
     Input("slider", "value")
@@ -812,7 +786,7 @@ def update_figure(severity_level):
     
     fig.update_layout(title=f"Top 10 Cities for Severity Level {severity_level}")
     return fig
-# Callback for Correlation Matrix
+
 @app.callback(
     Output('correlation-matrix-heatmap', 'figure'),
     Input('correlation-matrix-heatmap', 'id')
@@ -823,20 +797,20 @@ def update_correlation_matrix_heatmap(_):
                     color_continuous_scale='RdBu',
                     title='Correlation Matrix of Accident Features')
     return fig
-# Callback for Bubble Chart
+
 @app.callback(
     Output('bubble-chart', 'figure'),
     Input('severity-slider', 'value')
 )
 def update_bubble_chart(severity_range):
-    # Filter data based on selected severity range
+
     filtered_data = df_filteredd[df_filteredd['Severity'].between(severity_range[0], severity_range[1])]
     state_summary = filtered_data.groupby('State').agg(
         Accident_Count=('Severity', 'size'),
         Avg_Severity=('Severity', 'mean')
     ).reset_index()
 
-    # Create the bubble chart
+
     fig = px.scatter(
         state_summary,
         x='State',
@@ -849,7 +823,7 @@ def update_bubble_chart(severity_range):
         template='plotly_dark'
     )
 
-    # Update layout for better visual appeal
+
     fig.update_layout(
         xaxis_title='State',
         yaxis_title='Number of Accidents',
